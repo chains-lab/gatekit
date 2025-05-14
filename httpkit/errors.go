@@ -21,6 +21,9 @@ type ResponseErrorInput struct {
 	// HTTP status code applicable to this problem, as a string ("400", "500" и т.д.)
 	Status int
 
+	// Application-specific error code, expressed as a string value.
+	Code string
+
 	// short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
 	Title string
 
@@ -30,7 +33,7 @@ type ResponseErrorInput struct {
 	Error error
 
 	// Indicating which URI query parameter caused the error.
-	Parametr string
+	Parameter string
 
 	// JSON Pointer [RFC6901] to the value in the request document that caused the error [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute]. This MUST point to a value in the request document that exists; if it doesn’t, the client SHOULD simply ignore the pointer
 	Pointer string
@@ -60,8 +63,8 @@ func ResponseError(input ResponseErrorInput) []*jsonapi.ErrorObject {
 			(*meta)["request_id"] = input.RequestID
 		}
 
-		if input.Parametr != "" {
-			(*meta)["parametr"] = input.Parametr
+		if input.Parameter != "" {
+			(*meta)["parameter"] = input.Parameter
 		}
 
 		if input.Status == 0 {
@@ -76,8 +79,13 @@ func ResponseError(input ResponseErrorInput) []*jsonapi.ErrorObject {
 			input.Title = http.StatusText(input.Status)
 		}
 
+		if input.Code == "" {
+			input.Code = http.StatusText(input.Status)
+		}
+
 		eo := &jsonapi.ErrorObject{
 			ID:     input.ErrorID,
+			Code:   input.Code,
 			Status: fmt.Sprintf("%v", input.Status),
 			Title:  input.Title,
 			Detail: input.Detail,
@@ -104,7 +112,7 @@ func toJsonapiErrors(m map[string]error, input ResponseErrorInput) []*jsonapi.Er
 			(*meta)["request_id"] = input.RequestID
 		}
 
-		if input.Parametr != "" {
+		if input.Parameter != "" {
 			(*meta)["parametr"] = key
 		}
 
@@ -116,8 +124,13 @@ func toJsonapiErrors(m map[string]error, input ResponseErrorInput) []*jsonapi.Er
 			input.Title = http.StatusText(input.Status)
 		}
 
+		if input.Code == "" {
+			input.Code = http.StatusText(input.Status)
+		}
+
 		e := &jsonapi.ErrorObject{
 			ID:     input.ErrorID,
+			Code:   input.Code,
 			Status: fmt.Sprintf("%v", input.Status),
 			Title:  input.Title,
 			Detail: value.Error(),

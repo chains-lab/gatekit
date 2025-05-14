@@ -20,7 +20,7 @@ func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
 			if authHeader == "" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "MISSING_AUTHORIZATION_HEADER",
 					Detail: "Missing Authorization header",
 				})...)
 				return
@@ -30,7 +30,7 @@ func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "INVALID_AUTHORIZATION_HEADER",
 					Detail: "Invalid Authorization header",
 				})...)
 				return
@@ -51,7 +51,7 @@ func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "TOKEN_VALIDATION_FAILED",
 					Detail: "Token validation failed",
 				})...)
 				return
@@ -76,7 +76,7 @@ func AccessGrant(skAccount, skService string, roles ...roles.Role) func(http.Han
 			if authHeader == "" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "MISSING_AUTHORIZATION_HEADER",
 					Detail: "Missing Authorization header",
 				})...)
 				return
@@ -86,7 +86,7 @@ func AccessGrant(skAccount, skService string, roles ...roles.Role) func(http.Han
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "INVALID_AUTHORIZATION_HEADER",
 					Detail: "Invalid Authorization header",
 				})...)
 				return
@@ -107,7 +107,7 @@ func AccessGrant(skAccount, skService string, roles ...roles.Role) func(http.Han
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "TOKEN_VALIDATION_FAILED",
 					Detail: "Token validation failed",
 				})...)
 				return
@@ -123,7 +123,7 @@ func AccessGrant(skAccount, skService string, roles ...roles.Role) func(http.Han
 			if !roleAllowed {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusForbidden,
-					Title:  "Forbidden",
+					Code:   "USER_ROLE_NOT_ALLOWED",
 					Detail: "User role not allowed",
 				})...)
 				return
@@ -148,7 +148,7 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 			if authHeader == "" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "MISSING_AUTHORIZATION_HEADER",
 					Detail: "Missing Authorization header",
 				})...)
 				return
@@ -158,7 +158,7 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "INVALID_AUTHORIZATION_HEADER",
 					Detail: "Invalid Authorization header",
 				})...)
 				return
@@ -179,7 +179,7 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Title:  "Unauthorized",
+					Code:   "TOKEN_VALIDATION_FAILED",
 					Detail: "Token validation failed",
 				})...)
 				return
@@ -188,7 +188,7 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 			if tokenData.Subscription == uuid.Nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusForbidden,
-					Title:  "Forbidden",
+					Code:   "SUBSCRIPTION_NOT_ALLOWED",
 					Detail: "Not allowed for user subscription",
 				})...)
 				return
