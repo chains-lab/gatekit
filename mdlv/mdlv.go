@@ -30,8 +30,8 @@ func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
-					Code:   "INVALID_AUTHORIZATION_HEADER",
-					Detail: "Invalid Authorization header",
+					Code:   "MISSING_AUTHORIZATION_HEADER",
+					Detail: "Missing Authorization header",
 				})...)
 				return
 			}

@@ -33,7 +33,7 @@ func ParseRole(i string) (Role, error) {
 // res : 0, if roles are equal
 func CompareRolesUser(role1, role2 Role) int {
 	priority := map[Role]int{
-		SuperUser: 2,
+		SuperUser: 3,
 		//Service:   2,
 		Admin: 2,
 		User:  1,
