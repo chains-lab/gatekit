@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
+func AuthMdl(skUser, skService string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -47,7 +47,7 @@ func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
 				return
 			}
 
-			userData, err := tokens.VerifyAccountsJWT(r.Context(), tokenString, skAccount)
+			userData, err := tokens.VerifyUserJWT(r.Context(), tokenString, skUser)
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
@@ -67,7 +67,7 @@ func AuthMdl(skAccount, skService string) func(http.Handler) http.Handler {
 	}
 }
 
-func AccessGrant(skAccount, skService string, roles ...roles.Role) func(http.Handler) http.Handler {
+func AccessGrant(skUser, skService string, roles ...roles.Role) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -103,7 +103,7 @@ func AccessGrant(skAccount, skService string, roles ...roles.Role) func(http.Han
 				return
 			}
 
-			userData, err := tokens.VerifyAccountsJWT(ctx, tokenString, skAccount)
+			userData, err := tokens.VerifyUserJWT(ctx, tokenString, skUser)
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,
@@ -175,7 +175,7 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 				return
 			}
 
-			tokenData, err := tokens.VerifyAccountsJWT(ctx, tokenString, sk)
+			tokenData, err := tokens.VerifyUserJWT(ctx, tokenString, sk)
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
 					Status: http.StatusUnauthorized,

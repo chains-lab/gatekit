@@ -26,7 +26,7 @@ type UsersClaims struct {
 	Subscription uuid.UUID  `json:"subscription_type,omitempty"`
 }
 
-func VerifyAccountsJWT(ctx context.Context, tokenString, sk string) (UsersClaims, error) {
+func VerifyUserJWT(ctx context.Context, tokenString, sk string) (UsersClaims, error) {
 	claims := UsersClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(sk), nil
@@ -78,11 +78,11 @@ func GetUserTokenData(ctx context.Context) (
 	data UserData,
 	err error,
 ) {
-	account, ok := ctx.Value(SubjectIDKey).(string)
+	user, ok := ctx.Value(SubjectIDKey).(string)
 	if !ok {
 		return UserData{}, fmt.Errorf("user not authenticated")
 	}
-	accountID, err := uuid.Parse(account)
+	userID, err := uuid.Parse(user)
 	if err != nil {
 		return UserData{}, fmt.Errorf("user not authenticated")
 	}
@@ -103,7 +103,7 @@ func GetUserTokenData(ctx context.Context) (
 	}
 
 	return UserData{
-		UserID:    accountID,
+		UserID:    userID,
 		SessionID: session,
 		SubTypeID: sub,
 		Role:      role,
