@@ -19,27 +19,27 @@ const (
 	SubscriptionKey contextKey = "subscription"
 )
 
-type AccountClaims struct {
+type UsersClaims struct {
 	jwt.RegisteredClaims
 	Role         roles.Role `json:"role"`
 	Session      uuid.UUID  `json:"session_id,omitempty"`
 	Subscription uuid.UUID  `json:"subscription_type,omitempty"`
 }
 
-func VerifyAccountsJWT(ctx context.Context, tokenString, sk string) (AccountClaims, error) {
-	claims := AccountClaims{}
+func VerifyAccountsJWT(ctx context.Context, tokenString, sk string) (UsersClaims, error) {
+	claims := UsersClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(sk), nil
 	})
 	if err != nil || !token.Valid {
-		return AccountClaims{}, err
+		return UsersClaims{}, err
 	}
 	return claims, nil
 }
 
 type GenerateUserJwtRequest struct {
 	Issuer       string           `json:"iss,omitempty"`
-	Account      uuid.UUID        `json:"sub,omitempty"`
+	User         uuid.UUID        `json:"sub,omitempty"`
 	Session      uuid.UUID        `json:"session_id,omitempty"`
 	Subscription uuid.UUID        `json:"subscription_type,omitempty"`
 	Role         roles.Role       `json:"i,omitempty"`
@@ -52,10 +52,10 @@ func GenerateUserJWT(
 	sk string,
 ) (string, error) {
 	expirationTime := time.Now().UTC().Add(request.Ttl * time.Second)
-	claims := &AccountClaims{
+	claims := &UsersClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    request.Issuer,
-			Subject:   request.Account.String(),
+			Subject:   request.User.String(),
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 		Session:      request.Session,
@@ -67,43 +67,43 @@ func GenerateUserJWT(
 	return token.SignedString([]byte(sk))
 }
 
-type AccountData struct {
-	AccountID uuid.UUID  `json:"account_id,omitempty"`
+type UserData struct {
+	UserID    uuid.UUID  `json:"user_id,omitempty"`
 	SessionID uuid.UUID  `json:"session_id,omitempty"`
 	SubTypeID uuid.UUID  `json:"subscription_type,omitempty"`
 	Role      roles.Role `json:"role"`
 }
 
-func GetAccountTokenData(ctx context.Context) (
-	data AccountData,
+func GetUserTokenData(ctx context.Context) (
+	data UserData,
 	err error,
 ) {
 	account, ok := ctx.Value(SubjectIDKey).(string)
 	if !ok {
-		return AccountData{}, fmt.Errorf("user not authenticated")
+		return UserData{}, fmt.Errorf("user not authenticated")
 	}
 	accountID, err := uuid.Parse(account)
 	if err != nil {
-		return AccountData{}, fmt.Errorf("user not authenticated")
+		return UserData{}, fmt.Errorf("user not authenticated")
 	}
 
 	session, ok := ctx.Value(SessionIDKey).(uuid.UUID)
 	if !ok {
-		return AccountData{}, fmt.Errorf("sessions not authenticated")
+		return UserData{}, fmt.Errorf("sessions not authenticated")
 	}
 
 	role, ok := ctx.Value(RoleKey).(roles.Role)
 	if !ok {
-		return AccountData{}, fmt.Errorf("role not authenticated")
+		return UserData{}, fmt.Errorf("role not authenticated")
 	}
 
 	sub, ok := ctx.Value(SubscriptionKey).(uuid.UUID)
 	if !ok {
-		return AccountData{}, fmt.Errorf("subscription type not authenticated")
+		return UserData{}, fmt.Errorf("subscription type not authenticated")
 	}
 
-	return AccountData{
-		AccountID: accountID,
+	return UserData{
+		UserID:    accountID,
 		SessionID: session,
 		SubTypeID: sub,
 		Role:      role,

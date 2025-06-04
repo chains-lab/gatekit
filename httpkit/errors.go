@@ -37,6 +37,9 @@ type ResponseErrorInput struct {
 
 	// JSON Pointer [RFC6901] to the value in the request document that caused the error [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute]. This MUST point to a value in the request document that exists; if it doesn’t, the client SHOULD simply ignore the pointer
 	Pointer string
+
+	// Query string to indicate the specific query parameter that caused the error.
+	Query string
 }
 
 func ResponseError(input ResponseErrorInput) []*jsonapi.ErrorObject {
@@ -59,12 +62,24 @@ func ResponseError(input ResponseErrorInput) []*jsonapi.ErrorObject {
 			"timestamp": time.Now().UTC().Format(time.RFC3339),
 		}
 
+		if input.ErrorID != "" {
+			(*meta)["error_id"] = input.ErrorID
+		}
+
 		if input.RequestID != "" {
 			(*meta)["request_id"] = input.RequestID
 		}
 
 		if input.Parameter != "" {
 			(*meta)["parameter"] = input.Parameter
+		}
+
+		if input.Pointer != "" {
+			(*meta)["pointer"] = input.Pointer
+		}
+
+		if input.Query != "" {
+			(*meta)["query"] = input.Query
 		}
 
 		if input.Status == 0 {
@@ -112,8 +127,20 @@ func toJsonapiErrors(m map[string]error, input ResponseErrorInput) []*jsonapi.Er
 			(*meta)["request_id"] = input.RequestID
 		}
 
+		if input.ErrorID != "" {
+			(*meta)["error_id"] = input.ErrorID
+		}
+
+		if input.Pointer != "" {
+			(*meta)["pointer"] = input.Pointer
+		}
+
+		if input.Query != "" {
+			(*meta)["query"] = input.Query
+		}
+
 		if input.Parameter != "" {
-			(*meta)["parametr"] = key
+			(*meta)["parameter"] = key
 		}
 
 		if input.Status == 0 {
