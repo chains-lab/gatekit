@@ -4,20 +4,20 @@ import "fmt"
 
 type Role string
 
-// TODO in future maybe add service role and verify service role
+// TODO in future maybe add service role
 const (
-	//Service   Role = "service"
-	SuperUser Role = "super_user"
-	Admin     Role = "admin"
-	User      Role = "user"
+	SuperUser  Role = "super_user"
+	Admin      Role = "admin"
+	VerifyUser Role = "verify_user"
+	User       Role = "user"
 )
 
 func ParseRole(i string) (Role, error) {
 	switch i {
-	//case "service":
-	//	return Service, nil
 	case "super_user":
 		return SuperUser, nil
+	case "verify_user":
+		return VerifyUser, nil
 	case "admin":
 		return Admin, nil
 	case "user":
@@ -33,9 +33,10 @@ func ParseRole(i string) (Role, error) {
 // res : 0, if roles are equal
 func CompareRolesUser(role1, role2 Role) int {
 	priority := map[Role]int{
-		SuperUser: 3,
-		Admin:     2,
-		User:      1,
+		SuperUser:  3,
+		Admin:      2,
+		VerifyUser: 1,
+		User:       1,
 	}
 
 	p1, ok1 := priority[role1]
