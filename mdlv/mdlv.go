@@ -38,15 +38,6 @@ func AuthMdl(skUser, skService string) func(http.Handler) http.Handler {
 
 			tokenString := parts[1]
 
-			serviceData, err := tokens.VerifyServiceJWT(ctx, tokenString, skService)
-			if err == nil {
-				ctx = context.WithValue(ctx, tokens.ServerKey, serviceData.Subject)
-				ctx = context.WithValue(ctx, tokens.AudienceKey, serviceData.Audience)
-
-				next.ServeHTTP(w, r.WithContext(ctx))
-				return
-			}
-
 			userData, err := tokens.VerifyUserJWT(r.Context(), tokenString, skUser)
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
@@ -61,6 +52,7 @@ func AuthMdl(skUser, skService string) func(http.Handler) http.Handler {
 			ctx = context.WithValue(ctx, tokens.SessionIDKey, userData.Session)
 			ctx = context.WithValue(ctx, tokens.SubscriptionKey, userData.Subscription)
 			ctx = context.WithValue(ctx, tokens.RoleKey, userData.Role)
+			ctx = context.WithValue(ctx, tokens.VerifiedKey, userData.Verified)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -94,15 +86,6 @@ func AccessGrant(skUser, skService string, roles ...roles.Role) func(http.Handle
 
 			tokenString := parts[1]
 
-			serviceData, err := tokens.VerifyServiceJWT(ctx, tokenString, skService)
-			if err == nil {
-				ctx = context.WithValue(ctx, tokens.ServerKey, serviceData.Subject)
-				ctx = context.WithValue(ctx, tokens.AudienceKey, serviceData.Audience)
-
-				next.ServeHTTP(w, r.WithContext(ctx))
-				return
-			}
-
 			userData, err := tokens.VerifyUserJWT(ctx, tokenString, skUser)
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
@@ -133,6 +116,7 @@ func AccessGrant(skUser, skService string, roles ...roles.Role) func(http.Handle
 			ctx = context.WithValue(ctx, tokens.SessionIDKey, userData.Session)
 			ctx = context.WithValue(ctx, tokens.SubscriptionKey, userData.Subscription)
 			ctx = context.WithValue(ctx, tokens.RoleKey, userData.Role)
+			ctx = context.WithValue(ctx, tokens.VerifiedKey, userData.Verified)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -166,15 +150,6 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 
 			tokenString := parts[1]
 
-			serviceData, err := tokens.VerifyServiceJWT(ctx, tokenString, sk)
-			if err == nil {
-				ctx = context.WithValue(ctx, tokens.ServerKey, serviceData.Subject)
-				ctx = context.WithValue(ctx, tokens.AudienceKey, serviceData.Audience)
-
-				next.ServeHTTP(w, r.WithContext(ctx))
-				return
-			}
-
 			tokenData, err := tokens.VerifyUserJWT(ctx, tokenString, sk)
 			if err != nil {
 				httpkit.RenderErr(w, httpkit.ResponseError(httpkit.ResponseErrorInput{
@@ -198,6 +173,7 @@ func SubMdl(sk string) func(http.Handler) http.Handler {
 			ctx = context.WithValue(ctx, tokens.SessionIDKey, tokenData.Session)
 			ctx = context.WithValue(ctx, tokens.SubscriptionKey, tokenData.Subscription)
 			ctx = context.WithValue(ctx, tokens.RoleKey, tokenData.Role)
+			ctx = context.WithValue(ctx, tokens.VerifiedKey, tokenData.Verified)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
