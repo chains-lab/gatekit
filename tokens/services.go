@@ -4,9 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/chains-lab/gatekit/roles"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,11 +13,11 @@ const (
 
 type ServiceClaims struct {
 	jwt.RegisteredClaims
-	UserID           uuid.UUID  `json:"sub,omitempty"`
-	UserSession      uuid.UUID  `json:"session_id,omitempty"`
-	UserSubscription uuid.UUID  `json:"subscription_type,omitempty"`
-	UserRole         roles.Role `json:"role"`
-	UserVerified     bool       `json:"verified,omitempty"`
+	//UserID           uuid.UUID  `json:"sub,omitempty"`
+	//UserSession      uuid.UUID  `json:"session_id,omitempty"`
+	//UserSubscription uuid.UUID  `json:"subscription_type,omitempty"`
+	//UserRole         roles.Role `json:"role"`
+	//UserVerified     bool       `json:"verified,omitempty"`
 }
 
 func VerifyServiceJWT(ctx context.Context, tokenString, sk string) (ServiceClaims, error) {
@@ -36,15 +34,15 @@ func VerifyServiceJWT(ctx context.Context, tokenString, sk string) (ServiceClaim
 }
 
 type GenerateServiceJwtRequest struct {
-	Issuer           string        `json:"iss,omitempty"` //Service issuer
-	Subject          string        `json:"sub,omitempty"` //Subject of the JWT, typically the service name (often coincides with the issuer)
-	Audience         []string      `json:"aud,omitempty"` //Audience of the JWT, typically the service that will consume it
-	UserID           uuid.UUID     `json:"user_id,omitempty"`
-	UserSession      uuid.UUID     `json:"session_id,omitempty"`
-	UserSubscription uuid.UUID     `json:"subscription_type,omitempty"`
-	UserRole         roles.Role    `json:"role,omitempty"`
-	UserVerified     bool          `json:"verified,omitempty"`
-	Ttl              time.Duration `json:"ttl,omitempty"`
+	Issuer   string   `json:"iss,omitempty"` //Service issuer
+	Subject  string   `json:"sub,omitempty"` //Subject of the JWT, typically the service name (often coincides with the issuer)
+	Audience []string `json:"aud,omitempty"` //Audience of the JWT, typically the service that will consume it
+	//UserID           uuid.UUID     `json:"user_id,omitempty"`
+	//UserSession      uuid.UUID     `json:"session_id,omitempty"`
+	//UserSubscription uuid.UUID     `json:"subscription_type,omitempty"`
+	//UserRole         roles.Role    `json:"role,omitempty"`
+	//UserVerified     bool          `json:"verified,omitempty"`
+	Ttl time.Duration `json:"ttl,omitempty"`
 }
 
 func GenerateServiceJWT(
@@ -60,11 +58,11 @@ func GenerateServiceJWT(
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 
-		UserID:           request.UserID,
-		UserSession:      request.UserSession,
-		UserSubscription: request.UserSubscription,
-		UserRole:         request.UserRole,
-		UserVerified:     request.UserVerified,
+		//UserID:           request.UserID,
+		//UserSession:      request.UserSession,
+		//UserSubscription: request.UserSubscription,
+		//UserRole:         request.UserRole,
+		//UserVerified:     request.UserVerified,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
