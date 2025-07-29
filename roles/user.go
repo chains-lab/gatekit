@@ -4,7 +4,6 @@ import "fmt"
 
 type Role string
 
-// TODO in future maybe add service role
 const (
 	SuperUser Role = "super_user"
 	Admin     Role = "admin"

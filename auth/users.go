@@ -1,4 +1,4 @@
-package tokens
+package auth
 
 import (
 	"context"
@@ -13,11 +13,10 @@ import (
 type contextKey string
 
 const (
-	RoleKey         contextKey = "role"
-	SubjectIDKey    contextKey = "subject"
-	SessionIDKey    contextKey = "session"
-	SubscriptionKey contextKey = "subscription"
-	VerifiedKey     contextKey = "verified"
+	RoleKey      contextKey = "role"
+	SubjectIDKey contextKey = "subject"
+	SessionIDKey contextKey = "session"
+	VerifiedKey  contextKey = "verified"
 )
 
 type UsersClaims struct {

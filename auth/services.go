@@ -1,4 +1,4 @@
-package tokens
+package auth
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ServerKey contextKey = "server"
+	ServiceKey contextKey = "service"
 )
 
 type ServiceClaims struct {
