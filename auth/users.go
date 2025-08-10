@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/chains-lab/gatekit/roles"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -21,9 +20,9 @@ const (
 
 type UsersClaims struct {
 	jwt.RegisteredClaims
-	Role     roles.Role `json:"role"`
-	Session  uuid.UUID  `json:"session_id,omitempty"`
-	Verified bool       `json:"verified,omitempty"`
+	Role     string    `json:"role"`
+	Session  uuid.UUID `json:"session_id,omitempty"`
+	Verified bool      `json:"verified,omitempty"`
 }
 
 func VerifyUserJWT(ctx context.Context, tokenString, sk string) (UsersClaims, error) {
@@ -43,7 +42,7 @@ type GenerateUserJwtRequest struct {
 	User     uuid.UUID     `json:"sub,omitempty"`
 	Session  uuid.UUID     `json:"session_id,omitempty"`
 	Verified bool          `json:"verified,omitempty"`
-	Role     roles.Role    `json:"i,omitempty"`
+	Role     string        `json:"i,omitempty"`
 	Ttl      time.Duration `json:"ttl,omitempty"`
 }
 
@@ -69,10 +68,10 @@ func GenerateUserJWT(
 }
 
 type UserData struct {
-	UserID    uuid.UUID  `json:"user_id,omitempty"`
-	SessionID uuid.UUID  `json:"session_id,omitempty"`
-	Verified  bool       `json:"verified,omitempty"`
-	Role      roles.Role `json:"role"`
+	UserID    uuid.UUID `json:"user_id,omitempty"`
+	SessionID uuid.UUID `json:"session_id,omitempty"`
+	Verified  bool      `json:"verified,omitempty"`
+	Role      string    `json:"role"`
 }
 
 func GetUserTokenData(ctx context.Context) (
@@ -93,7 +92,7 @@ func GetUserTokenData(ctx context.Context) (
 		return UserData{}, fmt.Errorf("sessions not authenticated")
 	}
 
-	role, ok := ctx.Value(RoleKey).(roles.Role)
+	role, ok := ctx.Value(RoleKey).(string)
 	if !ok {
 		return UserData{}, fmt.Errorf("role not authenticated")
 	}

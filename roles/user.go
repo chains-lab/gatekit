@@ -2,20 +2,21 @@ package roles
 
 import "fmt"
 
-type Role string
-
 const (
-	SuperUser Role = "super_user"
-	Admin     Role = "admin"
-	User      Role = "user"
+	SuperUser = "super_user"
+	Admin     = "admin"
+	Moder     = "moderator"
+	User      = "user"
 )
 
-func ParseRole(i string) (Role, error) {
+func ParseRole(i string) (string, error) {
 	switch i {
 	case "super_user":
 		return SuperUser, nil
 	case "admin":
 		return Admin, nil
+	case "moderator":
+		return Moder, nil
 	case "user":
 		return User, nil
 	default:
@@ -27,10 +28,11 @@ func ParseRole(i string) (Role, error) {
 // res : 1, if first role is higher priority
 // res : -1, if second role is higher priority
 // res : 0, if roles are equal
-func CompareRolesUser(role1, role2 Role) int {
-	priority := map[Role]int{
-		SuperUser: 3,
-		Admin:     2,
+func CompareRolesUser(role1, role2 string) int {
+	priority := map[string]int{
+		SuperUser: 4,
+		Admin:     3,
+		Moder:     2,
 		User:      1,
 	}
 
