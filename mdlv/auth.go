@@ -12,9 +12,11 @@ import (
 )
 
 const (
-	hAuthorization        = "Authorization"
-	hServiceAuthorization = "X-Service-Authorization" // отдельный заголовок для m2m
-	bearerPrefix          = "bearer "
+	AuthorizationHeader        = "Authorization"
+	ServiceAuthorizationHeader = "X-Service-Authorization" // отдельный заголовок для m2
+	IpHeader                   = "X-User-IP"
+	UserAgentHeader            = "X-User-Agent"
+	ClientTxHeader             = "X-Client-Tx"
 )
 
 func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler {
@@ -22,10 +24,10 @@ func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 
-			authHeader := r.Header.Get(hAuthorization)
+			authHeader := r.Header.Get(AuthorizationHeader)
 			if authHeader == "" {
 				ape.RenderErr(w,
-					problems.Unauthorized("Missing Authorization header"),
+					problems.Unauthorized("Missing AuthorizationHeader header"),
 				)
 
 				return
@@ -34,7 +36,7 @@ func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 				ape.RenderErr(w,
-					problems.Unauthorized("Missing Authorization header"),
+					problems.Unauthorized("Missing AuthorizationHeader header"),
 				)
 
 				return
@@ -66,6 +68,69 @@ func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler 
 				Role:      userData.Role,
 				Verified:  userData.Verified,
 			})
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
+func IpMdl(ctxKey interface{}) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
+			ip := r.Header.Get(IpHeader)
+			if ip == "" {
+				ape.RenderErr(w,
+					problems.Unauthorized("Missing X-User-IP header"),
+				)
+
+				return
+			}
+
+			ctx = context.WithValue(ctx, ctxKey, ip)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
+func UserAgentMdl(ctxKey interface{}) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
+			ua := r.Header.Get(UserAgentHeader)
+			if ua == "" {
+				ape.RenderErr(w,
+					problems.Unauthorized("Missing X-User-Agent header"),
+				)
+
+				return
+			}
+
+			ctx = context.WithValue(ctx, ctxKey, ua)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
+func ClientMdl(ctxKey interface{}) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
+			client := r.Header.Get(ClientTxHeader)
+			if client == "" {
+				ape.RenderErr(w,
+					problems.Unauthorized("Missing X-Client-Tx header"),
+				)
+
+				return
+			}
+
+			ctx = context.WithValue(ctx, ctxKey, client)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

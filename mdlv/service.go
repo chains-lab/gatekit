@@ -14,9 +14,9 @@ func ServiceAuthMdl(serviceName, skService string) func(http.Handler) http.Handl
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 
-			h := r.Header.Get(hServiceAuthorization)
+			h := r.Header.Get(ServiceAuthorizationHeader)
 			if h == "" {
-				ape.RenderErr(w, problems.Unauthorized("failed service authorization: missing X-Service-Authorization header"))
+				ape.RenderErr(w, problems.Unauthorized("failed service authorization: missing X-Service-AuthorizationHeader header"))
 
 				return
 			}

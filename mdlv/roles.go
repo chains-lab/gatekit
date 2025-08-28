@@ -17,7 +17,7 @@ func AccessGrant(ctxKey interface{}, allowedRoles ...string) func(http.Handler) 
 			user, ok := ctx.Value(ctxKey).(auth.UserData)
 			if !ok {
 				ape.RenderErr(w,
-					problems.Unauthorized("Missing Authorization header"),
+					problems.Unauthorized("Missing AuthorizationHeader header"),
 				)
 
 				return
