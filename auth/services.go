@@ -7,10 +7,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const (
-	ServiceKey contextKey = "service"
-)
-
 type ServiceClaims struct {
 	jwt.RegisteredClaims
 }
@@ -33,22 +29,4 @@ type GenerateServiceJwtRequest struct {
 	Subject  string        `json:"sub,omitempty"` //Subject of the JWT, typically the service name (often coincides with the issuer)
 	Audience []string      `json:"aud,omitempty"` //Audience of the JWT, typically the service that will consume it
 	Ttl      time.Duration `json:"ttl,omitempty"`
-}
-
-func GenerateServiceJWT(
-	request GenerateServiceJwtRequest,
-	sk string,
-) (string, error) {
-	expirationTime := time.Now().UTC().Add(request.Ttl * time.Second)
-	claims := &ServiceClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    request.Issuer,
-			Subject:   request.Subject,
-			Audience:  jwt.ClaimStrings(request.Audience),
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(sk))
 }

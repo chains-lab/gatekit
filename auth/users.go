@@ -2,27 +2,17 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
-type contextKey string
-
-const (
-	RoleKey      contextKey = "role"
-	SubjectIDKey contextKey = "subject"
-	SessionIDKey contextKey = "session"
-	VerifiedKey  contextKey = "verified"
-)
-
 type UsersClaims struct {
 	jwt.RegisteredClaims
-	Role     string    `json:"role"`
-	Session  uuid.UUID `json:"session_id,omitempty"`
-	Verified bool      `json:"verified,omitempty"`
+	Role      string    `json:"role"`
+	SessionID uuid.UUID `json:"session_id,omitempty"`
+	Verified  bool      `json:"verified,omitempty"`
 }
 
 func VerifyUserJWT(ctx context.Context, tokenString, sk string) (UsersClaims, error) {
@@ -58,9 +48,9 @@ func GenerateUserJWT(
 			Audience:  jwt.ClaimStrings(request.Audience),
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
-		Session:  request.Session,
-		Verified: request.Verified,
-		Role:     request.Role,
+		SessionID: request.Session,
+		Verified:  request.Verified,
+		Role:      request.Role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -68,44 +58,8 @@ func GenerateUserJWT(
 }
 
 type UserData struct {
-	UserID    uuid.UUID `json:"user_id,omitempty"`
-	SessionID uuid.UUID `json:"session_id,omitempty"`
-	Verified  bool      `json:"verified,omitempty"`
-	Role      string    `json:"role"`
-}
-
-func GetUserTokenData(ctx context.Context) (
-	data UserData,
-	err error,
-) {
-	user, ok := ctx.Value(SubjectIDKey).(string)
-	if !ok {
-		return UserData{}, fmt.Errorf("user not authenticated")
-	}
-	userID, err := uuid.Parse(user)
-	if err != nil {
-		return UserData{}, fmt.Errorf("user not authenticated")
-	}
-
-	session, ok := ctx.Value(SessionIDKey).(uuid.UUID)
-	if !ok {
-		return UserData{}, fmt.Errorf("sessions not authenticated")
-	}
-
-	role, ok := ctx.Value(RoleKey).(string)
-	if !ok {
-		return UserData{}, fmt.Errorf("role not authenticated")
-	}
-
-	ver, ok := ctx.Value(VerifiedKey).(bool)
-	if !ok {
-		return UserData{}, fmt.Errorf("verified status not authenticated")
-	}
-
-	return UserData{
-		UserID:    userID,
-		SessionID: session,
-		Role:      role,
-		Verified:  ver,
-	}, nil
+	ID        uuid.UUID
+	SessionID uuid.UUID
+	Verified  bool
+	Role      string
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/chains-lab/gatekit/roles"
 )
 
-func AccessGrant(ctxKey interface{}, allowedRoles ...string) func(http.Handler) http.Handler {
+func AccessGrant(ctxKey interface{}, allowed map[string]bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -31,14 +31,7 @@ func AccessGrant(ctxKey interface{}, allowedRoles ...string) func(http.Handler) 
 				return
 			}
 
-			roleAllowed := false
-			for _, role := range allowedRoles {
-				if user.Role == role {
-					roleAllowed = true
-					break
-				}
-			}
-			if !roleAllowed {
+			if !allowed[user.Role] {
 				ape.RenderErr(w,
 					problems.Forbidden("User role not allowed"),
 				)

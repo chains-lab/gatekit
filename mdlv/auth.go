@@ -63,8 +63,8 @@ func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler 
 			}
 
 			ctx = context.WithValue(ctx, ctxKey, auth.UserData{
-				UserID:    userID,
-				SessionID: userData.Session,
+				ID:        userID,
+				SessionID: userData.SessionID,
 				Role:      userData.Role,
 				Verified:  userData.Verified,
 			})
