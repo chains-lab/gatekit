@@ -19,7 +19,7 @@ const (
 	ClientTxHeader             = "X-Client-Tx"
 )
 
-func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler {
+func Auth(ctxKey interface{}, skUser string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -74,7 +74,7 @@ func AuthMdl(ctxKey interface{}, skUser string) func(http.Handler) http.Handler 
 	}
 }
 
-func IpMdl(ctxKey interface{}) func(http.Handler) http.Handler {
+func Ip(ctxKey interface{}) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -95,7 +95,7 @@ func IpMdl(ctxKey interface{}) func(http.Handler) http.Handler {
 	}
 }
 
-func UserAgentMdl(ctxKey interface{}) func(http.Handler) http.Handler {
+func UserAgent(ctxKey interface{}) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -116,7 +116,7 @@ func UserAgentMdl(ctxKey interface{}) func(http.Handler) http.Handler {
 	}
 }
 
-func ClientMdl(ctxKey interface{}) func(http.Handler) http.Handler {
+func Client(ctxKey interface{}) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
