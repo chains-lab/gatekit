@@ -3,14 +3,12 @@ package roles
 import "fmt"
 
 const (
-	SuperUser = "super_user"
-	Admin     = "admin"
-	Moder     = "moderator"
-	User      = "user"
+	Admin = "admin"
+	Moder = "moderator"
+	User  = "user"
 )
 
 var rolesAllowed = []string{
-	SuperUser,
 	Admin,
 	Moder,
 	User,
@@ -44,10 +42,9 @@ func CompareRolesUser(role1, role2 string) (int, error) {
 	}
 
 	priority := map[string]int{
-		SuperUser: 4,
-		Admin:     3,
-		Moder:     2,
-		User:      1,
+		Admin: 3,
+		Moder: 2,
+		User:  1,
 	}
 
 	p1, ok1 := priority[role1]
