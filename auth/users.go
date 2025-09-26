@@ -12,7 +12,6 @@ type UsersClaims struct {
 	jwt.RegisteredClaims
 	Role      string    `json:"role"`
 	SessionID uuid.UUID `json:"session_id,omitempty"`
-	Verified  bool      `json:"verified,omitempty"`
 }
 
 func VerifyUserJWT(ctx context.Context, tokenString, sk string) (UsersClaims, error) {
@@ -31,7 +30,6 @@ type GenerateUserJwtRequest struct {
 	Audience []string      `json:"aud,omitempty"`
 	User     uuid.UUID     `json:"sub,omitempty"`
 	Session  uuid.UUID     `json:"session_id,omitempty"`
-	Verified bool          `json:"verified,omitempty"`
 	Role     string        `json:"i,omitempty"`
 	Ttl      time.Duration `json:"ttl,omitempty"`
 }
@@ -49,7 +47,6 @@ func GenerateUserJWT(
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 		SessionID: request.Session,
-		Verified:  request.Verified,
 		Role:      request.Role,
 	}
 
@@ -60,6 +57,5 @@ func GenerateUserJWT(
 type UserData struct {
 	ID        uuid.UUID
 	SessionID uuid.UUID
-	Verified  bool
 	Role      string
 }

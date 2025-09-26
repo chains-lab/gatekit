@@ -66,7 +66,6 @@ func Auth(ctxKey interface{}, skUser string) func(http.Handler) http.Handler {
 				ID:        userID,
 				SessionID: userData.SessionID,
 				Role:      userData.Role,
-				Verified:  userData.Verified,
 			})
 
 			next.ServeHTTP(w, r.WithContext(ctx))
